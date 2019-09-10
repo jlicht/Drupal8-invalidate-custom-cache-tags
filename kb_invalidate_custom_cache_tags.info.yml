@@ -1,0 +1,7 @@
+name: 'Invalidate custom cache tags'
+type: module
+description: 'Example to invalidate views custom cache tags'
+core: 8.x
+package: 'Custom'
+dependencies:
+  - views_custom_cache_tag

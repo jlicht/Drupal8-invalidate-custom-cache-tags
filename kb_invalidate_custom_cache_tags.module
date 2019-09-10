@@ -1,0 +1,86 @@
+<?php
+
+/**
+ * @file
+ * Contains kb_invalidate_custom_cache_tags.module.
+ */
+
+use Drupal\Core\Routing\RouteMatchInterface;
+
+// For hook_views_pre_views.
+use Drupal\views\ViewExecutable;
+
+// For hook_ENTITY_TYPE_presave.
+use Drupal\Core\Cache\Cache;
+use Drupal\Core\Entity\EntityInterface;
+
+/**
+ * Implements hook_help().
+ */
+function kb_invalidate_custom_cache_tags_help($route_name, RouteMatchInterface $route_match) {
+  switch ($route_name) {
+    // Main module help for the kb_invalidate_custom_cache_tags module.
+    case 'help.page.kb_invalidate_custom_cache_tags':
+      $output = '';
+      $output .= '<h3>' . t('About') . '</h3>';
+      $output .= '<p>' . t('Example to invalidate views custom cache tags') . '</p>';
+      return $output;
+
+    default:
+  }
+}
+
+/**
+ * Implements hook_ENTITY_TYPE_presave().
+ *
+ * Invalid cache tags for node lists.
+ */
+function kb_invalidate_custom_cache_tags_node_presave(EntityInterface $entity) {
+  $cache_tag = 'node:type:' . $entity->getType();
+  Cache::invalidateTags([$cache_tag]);
+}
+
+/**
+ * Implements hook_views_pre_view().
+ *
+ * Add the time in the header of our views.
+ *
+ * For this to work, create an article block named "block_articles" and
+ * a page block named "block_pages".
+ */
+function kb_invalidate_custom_cache_tags_views_pre_view(ViewExecutable $view, $display_id, array &$args) {
+
+  $contenu = "Time: " . date('H:i:s');
+
+  if ($view->id() == 'block_pages' && $display_id === 'block_1') {
+    $options = [
+      'id' => 'area_text_custom',
+      'table' => 'views',
+      'field' => 'area_text_custom',
+      'relationship' => 'none',
+      'group_type' => 'none',
+      'admin_label' => '',
+      'empty' => TRUE,
+      'tokenize' => FALSE,
+      'content' => $contenu,
+      'plugin_id' => 'text_custom',
+    ];
+    $view->setHandler('block_1', 'header', 'area_text_custom', $options);
+  }
+
+  if ($view->id() == 'block_articles' && $display_id === 'block_1') {
+    $options = [
+      'id' => 'area_text_custom',
+      'table' => 'views',
+      'field' => 'area_text_custom',
+      'relationship' => 'none',
+      'group_type' => 'none',
+      'admin_label' => '',
+      'empty' => TRUE,
+      'tokenize' => FALSE,
+      'content' => $contenu,
+      'plugin_id' => 'text_custom',
+    ];
+    $view->setHandler('block_1', 'header', 'area_text_custom', $options);
+  }
+}
