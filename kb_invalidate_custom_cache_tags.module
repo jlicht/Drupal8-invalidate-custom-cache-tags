@@ -41,6 +41,16 @@ function kb_invalidate_custom_cache_tags_node_presave(EntityInterface $entity) {
 }
 
 /**
+ * Implements hook_ENTITY_TYPE_delete().
+ *
+ * Invalid cache tags for node lists.
+ */
+function kb_invalidate_custom_cache_tags_node_delete(EntityInterface $entity) {
+  $cache_tag = 'node:type:' . $entity->getType();
+  Cache::invalidateTags([$cache_tag]);
+}
+
+/**
  * Implements hook_views_pre_view().
  *
  * Add the time in the header of our views.
